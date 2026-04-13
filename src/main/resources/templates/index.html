@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 20px;
+        }
+
+        button {
+            margin-right: 10px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #content {
+            margin-top: 20px;
+        }
+
+        .card {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Admin Panel</h1>
+
+<button onclick="loadProducts()">Products</button>
+<button onclick="loadUsers()">Users</button>
+
+<div id="content"></div>
+
+<script>
+    const API = "http://localhost:8080";
+
+    function loadProducts() {
+        fetch(`${API}/products`)
+            .then(res => res.json())
+            .then(data => {
+                const content = document.getElementById("content");
+
+                content.innerHTML = "<h2>Products</h2>";
+
+                data.forEach(p => {
+                    content.innerHTML += `
+                        <div class="card">
+                            <strong>${p.name}</strong><br>
+                            Price: R$ ${p.price}<br>
+                            Description: ${p.description}
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => console.log(err));
+    }
+
+    function loadUsers() {
+        fetch(`${API}/users`)
+            .then(res => res.json())
+            .then(data => {
+                const content = document.getElementById("content");
+
+                content.innerHTML = "<h2>Users</h2>";
+
+                data.forEach(u => {
+                    content.innerHTML += `
+                        <div class="card">
+                            <strong>${u.name}</strong><br>
+                            Email: ${u.email}<br>
+                            Phone: ${u.phone}
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => console.log(err));
+    }
+</script>
+
+</body>
+</html>
