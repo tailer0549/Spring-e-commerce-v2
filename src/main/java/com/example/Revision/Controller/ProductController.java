@@ -55,6 +55,4 @@ public class ProductController {
         obj = service.update(id, obj);
         return ResponseEntity.ok().body(new ProductDTO(obj));
     }
-
-
 }

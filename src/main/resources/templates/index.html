@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Mini Admin Panel</title>
+
     <style>
         body {
             font-family: Arial;
             margin: 20px;
+        }
+
+        input {
+            padding: 8px;
+            margin-right: 10px;
         }
 
         button {
@@ -31,55 +37,149 @@
 
 <h1>Admin Panel</h1>
 
-<button onclick="loadProducts()">Products</button>
-<button onclick="loadUsers()">Users</button>
+<!-- LOGIN -->
+<div id="loginBox">
+    <input type="text" id="email" placeholder="Email" value="admin@email.com">
+    <input type="password" id="password" placeholder="Senha" value="123">
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" style="display: none;">
+    <button onclick="loadProducts()">Products</button>
+    <button onclick="loadUsers()">Users</button>
+    <button onclick="logout()">Logout</button>
+</div>
 
 <div id="content"></div>
 
 <script>
     const API = "http://localhost:8080";
 
+    // LOGIN
+    async function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const response = await fetch(`${API}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) throw new Error("Login inválido");
+
+            const token = await response.text();
+            localStorage.setItem("token", token);
+
+            showApp();
+            alert("Login realizado!");
+        } catch (err) {
+            alert("Erro no login");
+        }
+    }
+
+    // LOGOUT
+    function logout() {
+        localStorage.removeItem("token");
+        document.getElementById("app").style.display = "none";
+        document.getElementById("loginBox").style.display = "block";
+        document.getElementById("content").innerHTML = "";
+    }
+
+    // HEADER
+    function getHeaders() {
+        const token = localStorage.getItem("token");
+        return token ? { "Authorization": "Bearer " + token } : {};
+    }
+
+    // MOSTRAR APP
+    function showApp() {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("app").style.display = "block";
+    }
+
+    // LOAD PRODUCTS
     function loadProducts() {
-        fetch(`${API}/products`)
-            .then(res => res.json())
-            .then(data => {
-                const content = document.getElementById("content");
+        fetch(`${API}/products`, { headers: getHeaders() })
+        .then(res => {
+            if (res.status === 403) {
+                alert("Sessão expirada");
+                logout();
+                return null;
+            }
+            if (!res.ok) throw new Error();
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
 
-                content.innerHTML = "<h2>Products</h2>";
+            const content = document.getElementById("content");
+            content.innerHTML = "<h2>Products</h2>";
 
-                data.forEach(p => {
-                    content.innerHTML += `
-                        <div class="card">
-                            <strong>${p.name}</strong><br>
-                            Price: R$ ${p.price}<br>
-                            Description: ${p.description}
-                        </div>
-                    `;
-                });
-            })
-            .catch(err => console.log(err));
+            data.forEach(p => {
+                content.innerHTML += `
+                    <div class="card">
+                        <strong>${p.name}</strong><br>
+                        Price: R$ ${p.price}<br>
+                        Description: ${p.description}
+                    </div>
+                `;
+            });
+        })
+        .catch(() => alert("Erro ao carregar produtos"));
     }
 
+    // LOAD USERS
     function loadUsers() {
-        fetch(`${API}/users`)
-            .then(res => res.json())
-            .then(data => {
-                const content = document.getElementById("content");
+        fetch(`${API}/users`, { headers: getHeaders() })
+        .then(res => {
+            if (res.status === 403) {
+                alert("Sessão expirada");
+                logout();
+                return null;
+            }
+            if (!res.ok) throw new Error();
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
 
-                content.innerHTML = "<h2>Users</h2>";
+            const content = document.getElementById("content");
+            content.innerHTML = "<h2>Users</h2>";
 
-                data.forEach(u => {
-                    content.innerHTML += `
-                        <div class="card">
-                            <strong>${u.name}</strong><br>
-                            Email: ${u.email}<br>
-                            Phone: ${u.phone}
-                        </div>
-                    `;
-                });
-            })
-            .catch(err => console.log(err));
+            data.forEach(u => {
+                content.innerHTML += `
+                    <div class="card">
+                        <strong>${u.name}</strong><br>
+                        Email: ${u.email}<br>
+                        Phone: ${u.phone}
+                    </div>
+                `;
+            });
+        })
+        .catch(() => alert("Erro ao carregar usuários"));
     }
+
+    // AUTO LOGIN
+    window.onload = () => {
+        const token = localStorage.getItem("token");
+
+        if (!token) return;
+
+        fetch(`${API}/products`, {
+            headers: { "Authorization": "Bearer " + token }
+        })
+        .then(res => {
+            if (res.ok) {
+                showApp();
+            } else {
+                logout();
+            }
+        })
+        .catch(() => logout());
+    };
 </script>
 
 </body>

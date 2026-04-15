@@ -32,7 +32,7 @@ public class UserService {
 
     public User insert(UserInsertDTO dto) {
 
-        User obj = fromInsertDTO(dto);
+        User obj = fromInsertDTO(dto); // Transformando um dto em User
         return repository.save(obj);
     }
 

@@ -12,7 +12,6 @@ import java.time.Instant;
 import java.util.Arrays;
 
 @Configuration
-@Profile("test")
 public class TestConfig implements CommandLineRunner { // Configurações do banco de dados h2
 
     @Autowired
@@ -89,17 +88,5 @@ public class TestConfig implements CommandLineRunner { // Configurações do ban
         o1.setPayment(pay1);
 
         orderRepository.save(o1);
-
-
-
-
-
-
-
     }
-
-
-
-
-
 }
