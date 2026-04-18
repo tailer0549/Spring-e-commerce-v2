@@ -37,15 +37,16 @@ Após realizar o login, um token é gerado e deve ser enviado nas requisições 
 Login retorna um token JWT
 Rotas protegidas exigem autenticação
 Controle básico de acesso implementado.
-Como rodar o projeto
-Pré-requisitos
+Como rodar o projeto,
+Pré-requisitos:
 Java 17 ou superior
 Maven
-Clonando o repositório
+
+Clonando o repositório:
 git clone https://github.com/tailer0549/Spring-e-commerce-v2.git
 cd Spring-e-commerce-v2
 
-Executando a aplicação
+Executando a aplicação:
 ./mvnw spring-boot:run
 
 
