@@ -37,7 +37,7 @@ Após realizar o login, um token é gerado e deve ser enviado nas requisições 
 Login retorna um token JWT
 Rotas protegidas exigem autenticação
 Controle básico de acesso implementado
-Como rodar o projeto
+.Como rodar o projeto
 Pré-requisitos
 Java 17 ou superior
 Maven
